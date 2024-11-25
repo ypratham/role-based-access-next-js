@@ -20,7 +20,7 @@ export default function Navbar() {
             quality={100}
             className="h-10 w-10"
           />
-          DeployIt
+          AccessNexus
         </Link>
         <ul className="flex items-center gap-4">
           <li>

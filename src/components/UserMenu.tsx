@@ -44,16 +44,13 @@ export default function UserMenu({
             <p className="text-sm font-medium leading-none">
               {session?.user.name}
             </p>
-            <p className="text-muted-foreground text-xs leading-none">
+            <p className="text-xs leading-none text-muted-foreground">
               {session?.user.email}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <UserIcon className="mr-2 h-4 w-4" />
-          <span>Profile</span>
-        </DropdownMenuItem>
+
         <DropdownMenuItem asChild>
           <Link href={"/dashboard"}>
             <LayoutDashboardIcon className="mr-2 h-4 w-4" />

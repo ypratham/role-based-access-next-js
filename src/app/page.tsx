@@ -8,10 +8,8 @@ export default async function Home() {
       <Navbar />{" "}
       <Container>
         <section className="container mx-auto flex min-h-[80vh] flex-col items-center justify-center px-4 py-16 text-center">
-          <h1 className="mb-6 text-4xl font-bold text-gray-800 md:text-6xl">
-            Role Based Access Control
-            <br />
-            (DEMO)
+          <h1 className="mb-6 w-1/2 text-4xl font-bold tracking-[.3rem] text-gray-800 md:text-6xl">
+            Where Security Meets Simplicity
           </h1>
           <p className="mx-auto mb-12 max-w-2xl text-xl text-gray-600">
             Secure, scalable access management built with Next.js and T3 Stack

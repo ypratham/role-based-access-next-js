@@ -32,15 +32,6 @@ export function AppSidebar({
 
   const { update, data: sessionData } = useSession();
 
-  const userReadPermission = usePermission("USER", "READ");
-  const rolesReadPermission = usePermission("ROLES", "READ");
-  const logsReadPermission = usePermission("LOGS", "READ");
-  const permissionReadPermission = usePermission("PERMISSIONS", "READ");
-
-  const rolesWritePermission = usePermission("ROLES", "READ");
-
-  const permissionWritePermission = usePermission("PERMISSIONS", "READ");
-
   const data = {
     versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
     navMain: [
@@ -63,7 +54,7 @@ export function AppSidebar({
           {
             title: "Manage",
             url: "/dashboard/roles",
-            access: ["ROLE", "READ"],
+            access: ["ROLES", "READ"],
           },
           {
             title: "Create new ",
@@ -80,7 +71,7 @@ export function AppSidebar({
           {
             title: "Manage",
             url: "/dashboard/permission",
-            access: [],
+            access: ["PERMISSIONS", "READ"],
           },
           {
             title: "Create new ",
@@ -127,7 +118,7 @@ export function AppSidebar({
           quality={100}
           className="h-8 w-8"
         />
-        <p className="text-2xl font-bold">DeployIt</p>
+        <p className="text-2xl font-bold">AccessNexus</p>
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
