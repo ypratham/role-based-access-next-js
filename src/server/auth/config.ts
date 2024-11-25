@@ -1,9 +1,10 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
 
 import { db } from "@/server/db";
-
+import Google from "next-auth/providers/google";
+import { env } from "@/env";
+import { api } from "@/trpc/server";
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -14,15 +15,16 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      roleId: bigint | null;
+      isActive: boolean | null;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    // ...other properties
+    roleId?: bigint;
+    isActive?: boolean;
+  }
 }
 
 /**
@@ -32,7 +34,10 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    DiscordProvider,
+    Google({
+      clientId: env.AUTH_GOOGLE_ID,
+      clientSecret: env.AUTH_GOOGLE_SECRET,
+    }),
     /**
      * ...add more providers here.
      *
@@ -45,12 +50,25 @@ export const authConfig = {
   ],
   adapter: PrismaAdapter(db),
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session, user, token }) => {
+      const payload = {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          roleId: user.roleId,
+          isActive: user.isActive,
+        },
+      };
+
+      return payload;
+    },
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.isActive = user.isActive;
+      }
+
+      return token;
+    },
   },
 } satisfies NextAuthConfig;
