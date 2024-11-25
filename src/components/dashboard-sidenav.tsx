@@ -1,6 +1,5 @@
 "use client";
 import * as React from "react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -21,12 +20,17 @@ import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Skeleton } from "./ui/skeleton";
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  "use client";
-
+export function AppSidebar({
+  ...props
+}: {
+  permissions?: {
+    source: any;
+    action: any;
+  }[];
+}) {
   const pathname = usePathname();
 
-  const { update } = useSession();
+  const { update, data: sessionData } = useSession();
 
   const userReadPermission = usePermission("USER", "READ");
   const rolesReadPermission = usePermission("ROLES", "READ");
@@ -47,10 +51,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: "Manage",
             url: "/dashboard",
-            access: true,
+            access: ["USER", "READ"],
           },
         ],
-        access: userReadPermission.hasPermission,
+        access: ["USER", "READ"],
       },
       {
         title: "Roles",
@@ -59,15 +63,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: "Manage",
             url: "/dashboard/roles",
-            access: true,
+            access: ["ROLE", "READ"],
           },
           {
             title: "Create new ",
             url: "/dashboard/roles/new",
-            access: rolesWritePermission.hasPermission,
+            access: ["ROLES", "WRITE"],
           },
         ],
-        access: rolesReadPermission.hasPermission,
+        access: ["ROLES", "READ"],
       },
       {
         title: "Permissions",
@@ -76,15 +80,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: "Manage",
             url: "/dashboard/permission",
-            access: true,
+            access: [],
           },
           {
             title: "Create new ",
             url: "/dashboard/permission/new",
-            access: permissionWritePermission.hasPermission,
+            access: ["PERMISSIONS", "WRITE"],
           },
         ],
-        access: permissionReadPermission.hasPermission,
+        access: ["PERMISSIONS", "READ"],
       },
       {
         title: "Logs",
@@ -93,10 +97,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: "Manage",
             url: "/dashboard/logs",
-            access: true,
+            access: ["LOGS", "READ"],
           },
         ],
-        access: logsReadPermission.hasPermission,
+        access: ["LOGS", "READ"],
       },
     ],
   };
@@ -128,7 +132,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
 
-        {(userReadPermission.isLoading ||
+        {/* {(userReadPermission.isLoading ||
           rolesReadPermission.isLoading ||
           logsReadPermission.isLoading ||
           permissionReadPermission.isLoading ||
@@ -138,10 +142,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <Skeleton className="h-4 w-full flex-1" />
             <Skeleton className="h-6 flex-1" />
           </div>
-        )}
+        )} */}
 
         {data.navMain.map((item) => {
           if (!item.access) return;
+
+          if (props.permissions) {
+            const hasPermission = props.permissions.some(
+              (perm) =>
+                perm?.source === item.access[0] &&
+                perm.action.includes(item.access[1]),
+            );
+
+            if (!hasPermission) return;
+          }
 
           return (
             <SidebarGroup key={item.title}>
@@ -149,7 +163,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarGroupContent>
                 <SidebarMenu>
                   {item.items.map((item) => {
-                    if (!item.access) return;
+                    if (props.permissions) {
+                      const hasPermission = props.permissions.some(
+                        (perm) =>
+                          perm?.source === item.access[0] &&
+                          perm.action.includes(item.access[1]),
+                      );
+
+                      if (!hasPermission) return;
+                    }
 
                     return (
                       <SidebarMenuItem key={item.title}>

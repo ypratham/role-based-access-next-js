@@ -22,7 +22,7 @@ declare module "next-auth" {
 
   interface User {
     // ...other properties
-    roleId?: bigint;
+    roleId?: string;
     isActive?: boolean;
   }
 }
@@ -56,7 +56,7 @@ export const authConfig = {
 
       return true;
     },
-    session: async ({ session, user, token }) => {
+    session: async ({ session, user }) => {
       const payload = {
         ...session,
         user: {
