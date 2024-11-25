@@ -1,3 +1,7 @@
 /** @type {import("eslint").Linter.Config} */
 
-module.exports = {};
+module.exports = {
+  parserOptions: {
+    sourceType: "module",
+  },
+};
