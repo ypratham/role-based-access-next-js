@@ -10,7 +10,15 @@ import { TRPCError } from "@trpc/server";
 
 export const userRouter = createTRPCRouter({
   fetchAll: publicProcedure.query(async ({ ctx }) => {
-    const users = await ctx.db.user.findMany({});
+    const users = await ctx.db.user.findMany({
+      include: {
+        Roles: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
 
     return users;
   }),

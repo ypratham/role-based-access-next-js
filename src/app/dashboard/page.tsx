@@ -31,6 +31,14 @@ const columns: ColumnDef<User>[] = [
     cell: ({ row }) => <StatusBadge isActive={row.getValue("isActive")} />,
   },
   {
+    accessorKey: "Roles.name",
+    id: "roleName",
+    header: "Role assigned",
+    cell: ({ row }) => {
+      return <p>{row.getValue("roleName") || "No roles assigned"}</p>;
+    },
+  },
+  {
     header: "Action",
     cell: ({ row }) => (
       <UserTableActionsDropdown
