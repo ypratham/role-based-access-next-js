@@ -17,12 +17,16 @@ import { usePathname } from "next/navigation";
 import { NavUser } from "./ui/nav-user";
 import Image from "next/image";
 import { usePermission } from "@/hooks/user-permission";
+import { signOut, useSession } from "next-auth/react";
+import { toast } from "sonner";
 import { Skeleton } from "./ui/skeleton";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   "use client";
 
   const pathname = usePathname();
+
+  const { update } = useSession();
 
   const userReadPermission = usePermission("USER", "READ");
   const rolesReadPermission = usePermission("ROLES", "READ");
@@ -32,17 +36,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const rolesWritePermission = usePermission("ROLES", "READ");
 
   const permissionWritePermission = usePermission("PERMISSIONS", "READ");
-
-  if (
-    userReadPermission.isLoading ||
-    rolesReadPermission.isLoading ||
-    logsReadPermission.isLoading ||
-    permissionReadPermission.isLoading ||
-    rolesWritePermission.isLoading ||
-    permissionWritePermission.isLoading
-  ) {
-    return <Skeleton className="m-4 w-64 flex-grow-0 rounded-xl" />;
-  }
 
   const data = {
     versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
@@ -107,6 +100,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
     ],
   };
+  React.useEffect(() => {
+    update().then((d) => {
+      if (d?.user.isActive === false) {
+        signOut({
+          redirectTo: "/",
+        }).then(() => {
+          toast("You account has been deactivated.");
+        });
+      }
+    });
+  }, []);
 
   return (
     <Sidebar variant="floating" {...props}>
@@ -123,6 +127,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
+
+        {(userReadPermission.isLoading ||
+          rolesReadPermission.isLoading ||
+          logsReadPermission.isLoading ||
+          permissionReadPermission.isLoading ||
+          rolesWritePermission.isLoading ||
+          permissionWritePermission.isLoading) && (
+          <div className="space-y-3 p-2 px-4">
+            <Skeleton className="h-4 w-full flex-1" />
+            <Skeleton className="h-6 flex-1" />
+          </div>
+        )}
+
         {data.navMain.map((item) => {
           if (!item.access) return;
 

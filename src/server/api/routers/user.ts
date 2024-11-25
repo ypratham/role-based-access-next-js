@@ -194,45 +194,49 @@ export const userRouter = createTRPCRouter({
       return "Role assigned";
     }),
 
-  getPermissions: protectedProcedure.query(async ({ ctx }) => {
-    const user = await ctx.db.user.findUnique({
-      where: { id: ctx.session.user.id },
-      include: {
-        Roles: {
-          include: {
-            RolesPermissionJoin: {
-              include: {
-                Permission: true,
+  getPermissions: protectedProcedure
+    .input(z.object({}))
+    .query(async ({ ctx }) => {
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+        include: {
+          Roles: {
+            include: {
+              RolesPermissionJoin: {
+                include: {
+                  Permission: true,
+                },
               },
             },
           },
         },
-      },
-      cacheStrategy: {
-        ttl: 60,
-        swr: 60,
-      },
-    });
+        cacheStrategy: {
+          ttl: 60,
+          swr: 60,
+        },
+      });
 
-    return (
-      user?.Roles?.RolesPermissionJoin.map((join) => join.Permission).filter(
-        Boolean,
-      ) || []
-    );
-  }),
+      return (
+        user?.Roles?.RolesPermissionJoin.map((join) => join.Permission).filter(
+          Boolean,
+        ) || []
+      );
+    }),
 
-  getAccountStatus: protectedProcedure.query(async ({ ctx }) => {
-    const user = await ctx.db.user.findUnique({
-      where: { id: ctx.session.user.id },
-      select: {
-        isActive: true,
-      },
-      cacheStrategy: {
-        ttl: 60,
-        swr: 60,
-      },
-    });
+  getAccountStatus: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input: { id } }) => {
+      const user = await ctx.db.user.findUnique({
+        where: { id },
+        select: {
+          isActive: true,
+        },
+        cacheStrategy: {
+          ttl: 600,
+          swr: 600,
+        },
+      });
 
-    return user;
-  }),
+      return user;
+    }),
 });

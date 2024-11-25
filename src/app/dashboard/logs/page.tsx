@@ -34,7 +34,7 @@ const columns: ColumnDef<Cos>[] = [
     header: "Type",
   },
   {
-    accessorKey: "Scope",
+    accessorKey: "source",
     header: "Source",
   },
   {
@@ -44,6 +44,10 @@ const columns: ColumnDef<Cos>[] = [
   {
     accessorKey: "User_Logs_userIdToUser.name",
     header: "Username",
+  },
+  {
+    accessorKey: "created_at",
+    header: "Created at",
   },
 
   {

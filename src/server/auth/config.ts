@@ -49,7 +49,13 @@ export const authConfig = {
      */
   ],
   adapter: PrismaAdapter(db),
+  pages: {},
   callbacks: {
+    signIn({ user }) {
+      if (user.isActive == false) return false;
+
+      return true;
+    },
     session: async ({ session, user, token }) => {
       const payload = {
         ...session,

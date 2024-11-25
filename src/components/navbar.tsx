@@ -47,7 +47,7 @@ export default function Navbar() {
                   await signIn("google");
                 }}
               >
-                Login
+                Continue with Google
               </Button>
             )}
           </li>
