@@ -49,7 +49,11 @@ export const authConfig = {
      */
   ],
   adapter: PrismaAdapter(db),
-  pages: {},
+  pages: {
+    error: "/error",
+    signIn: "/",
+    signOut: "/",
+  },
   callbacks: {
     signIn({ user }) {
       if (user.isActive == false) return false;
